@@ -406,9 +406,24 @@ avdmanager list avd
 
 > ✅ **Checkpoint 3.1** ทดสอบกดปุ่มเข้าสู่ระบบด้วย Google ด้วยบัญชี Google จริงของคุณ ถ่ายภาพหน้าจอตอนเลือกบัญชี Google และภาพหน้าจอ Firebase Console ที่แสดงว่ามีผู้ใช้ใหม่ Provider เป็น Google เพิ่มเข้ามา อธิบายว่า `idToken` กับ `accessToken` ที่ได้จาก Google นำไปใช้ทำอะไรต่อในขั้นตอนการยืนยันตัวตนกับ Firebase (อ้างอิงหัวข้อ 9.4)
 
-```text
-บันทึกรูปผลลัพธ์ที่นี่ และคำอธิบาย
-```
+<img width="463" height="1015" alt="image" src="https://github.com/user-attachments/assets/ec6544c7-1d81-4654-a71e-0438bd072a5a" />
+
+<img width="1913" height="870" alt="image" src="https://github.com/user-attachments/assets/aa35eb64-bb61-47ce-9808-a00aec4c2118" />
+
+#### คำอธิบายการทำงานของ idToken และ accessToken ในการยืนยันตัวตนกับ Firebase
+
+- idToken (Identity Token):
+  - ได้มาจาก googleUser.authentication.idToken แบบ Synchronous ทันที
+  - มีหน้าที่เป็น หลักฐานระบุตัวตน ยืนยันว่าผู้ใช้คนนี้คือใคร และได้รับการรับรองตัวตนจาก Google แล้ว
+
+- accessToken (Access Token):
+  - ได้มาจากการร้องขอแบบ Asynchronous ผ่าน googleUser.authorizationClient.authorizationForScopes(['email'])
+  - มีหน้าที่เป็น สิทธิ์การเข้าถึงข้อมูล เพิ่มเติมของบัญชี เช่น อีเมลและโปรไฟล์ผู้ใช้
+
+- การนำไปใช้งานต่อกับ Firebase:
+  - ทั้ง idToken และ accessToken จะต้องถูกส่งควบคู่กันเข้าไปที่ GoogleAuthProvider.credential(idToken: idToken, accessToken: accessToken) เพื่อประกอบเป็นวัตถุ AuthCredential ที่สมบูรณ์
+  - จากนั้นจะส่ง Credential นี้ไปยัง _auth.signInWithCredential(credential) เพื่อให้ Firebase นำหลักฐานจาก Google ไปแลกเป็น Session การเข้าสู่ระบบของ Firebase Authentication เอง
+  - เมื่อกระบวนการนี้สำเร็จ Firebase จะถือว่าผู้ใช้เข้าสู่ระบบเรียบร้อย (มีสถานะล็อกอินเหมือน Email/Password) และทำให้ authStateChanges ส่งสถานะผู้ใช้อัปเดตใหม่ออกมาทันที
 
 ---
 
