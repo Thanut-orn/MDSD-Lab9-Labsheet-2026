@@ -173,9 +173,9 @@ Future<void> main() async {
 <img width="476" height="1013" alt="image" src="https://github.com/user-attachments/assets/ef9bcf3e-1f5d-4186-ad55-9d8bb2384e8d" />
 
 
-คำอธิบายการจัดการ Error ใน lib/services/auth_service.dart:
+#### คำอธิบายการจัดการ Error ใน lib/services/auth_service.dart:
 
-กรณี (ก) สมัครซ้ำด้วย Email เดิม (email-already-in-use): ในเมธอด signUp() มีบล็อก try/catch ดักจับ FirebaseAuthException เมื่อ Firebase ตรวจพบว่าอีเมลซ้ำ จะส่งค่า e.code เป็น 'email-already-in-use' ฟังก์ชัน _translateFirebaseError() จะจับเคส:
+- กรณี (ก) สมัครซ้ำด้วย Email เดิม (email-already-in-use): ในเมธอด signUp() มีบล็อก try/catch ดักจับ FirebaseAuthException เมื่อ Firebase ตรวจพบว่าอีเมลซ้ำ จะส่งค่า e.code เป็น 'email-already-in-use' ฟังก์ชัน _translateFirebaseError() จะจับเคส:
 
 ```dart
 case 'email-already-in-use':
@@ -183,7 +183,7 @@ case 'email-already-in-use':
 ```
 และ throw AuthException พร้อมข้อความภาษาไทยส่งต่อไปยังหน้าจอ LoginPage เพื่อนำไปแสดงผล
 
-กรณี (ข) ใส่รหัสผ่านสั้นเกินไป (weak-password): เมื่อส่งรหัสผ่านที่มีความยาวไม่ถึง 6 ตัวอักษรไปยัง Firebase Authentication เซิร์ฟเวอร์จะปฏิเสธและส่ง FirebaseAuthException ที่มีค่า e.code เป็น 'weak-password' ซึ่งฟังก์ชัน _translateFirebaseError() จัดการด้วย:
+- กรณี (ข) ใส่รหัสผ่านสั้นเกินไป (weak-password): เมื่อส่งรหัสผ่านที่มีความยาวไม่ถึง 6 ตัวอักษรไปยัง Firebase Authentication เซิร์ฟเวอร์จะปฏิเสธและส่ง FirebaseAuthException ที่มีค่า e.code เป็น 'weak-password' ซึ่งฟังก์ชัน _translateFirebaseError() จัดการด้วย:
 
 ```dart
 case 'weak-password':
