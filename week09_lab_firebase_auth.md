@@ -560,11 +560,26 @@ Widget build(BuildContext context) {
 
 > ✅ **Checkpoint 4.1** ถ่ายภาพหน้าจอ 3 ภาพเรียงกัน คือ (ก) แอปตอนเพิ่งเปิดขึ้นมาครั้งแรกแบบยังไม่ล็อกอิน แสดงหน้า Login (ข) หลังล็อกอินสำเร็จ แอปสลับไปแสดง `MainScaffold` อัตโนมัติโดยไม่ต้องกดอะไรเพิ่ม และ (ค) หลังกด "ออกจากระบบ" แอปสลับกลับไปหน้า Login เอง อธิบายว่าทำไมการใช้ `StreamBuilder` ฟัง `authStateChanges()` จึงทำให้ไม่ต้องเขียนโค้ดสั่ง Navigate ไปมาเอง
 
+- (ก)
 
-```text
-บันทึกรูปผลลัพธ์ที่นี่ (3 ภาพ) และคำอธิบาย
-```
+<img width="460" height="1022" alt="image" src="https://github.com/user-attachments/assets/39e5df92-5a88-4a59-a556-f91f00d7e641" />
 
+- (ข)
+
+<img width="465" height="1020" alt="image" src="https://github.com/user-attachments/assets/b384735d-f766-408e-89f8-f1f3f3ebdeca" />
+
+- (ค)
+
+<img width="478" height="1022" alt="image" src="https://github.com/user-attachments/assets/8767fed8-a0de-4160-883e-13cbb43d67b8" />
+
+#### คำอธิบายว่าทำไมการใช้ `StreamBuilder` ฟัง `authStateChanges()` จึงทำให้ไม่ต้องเขียนโค้ดสั่ง Navigate ไปมาเอง
+
+- การทำงานของ Stream: authStateChanges() ของ Firebase Authentication จะปล่อยค่าใหม่ (Emit Event) ออกมาทุกครั้งที่มีการเปลี่ยนแปลงสถานะ เช่น เมื่อเข้าสู่ระบบสำเร็จจะปล่อยอ็อบเจกต์ User และเมื่อกดออกจากระบบ (signOut()) จะปล่อยค่า null
+- การ Rebuild อัตโนมัติ: StreamBuilder ทำหน้าที่เป็นตัวรับฟัง (Listener) เมื่อได้รับข้อมูลใหม่จาก Stream จะเรียกฟังก์ชัน builder เพื่อ Rebuild หน้าจอใหม่ทันที
+- การสลับหน้าตามเงื่อนไข State:
+  - ถ้า snapshot.data == null จะคืนค่า LoginPage()
+  - ถ้า snapshot.data != null จะคืนค่า MainScaffol
+ส่งผลให้การเปลี่ยนหน้าจอเกิดขึ้นตามสถานะของผู้ใช้ (State) โดยตรง จึงไม่จำเป็นต้องเขียนโค้ดสั่งย้ายหน้าแบบ Imperative เช่น Navigator.push() หรือ Navigator.pop() เอง
 ---
 
 ## ส่วนที่ 5: ขยาย Repository Pattern ด้วย ItemRepositoryFirestore
