@@ -163,10 +163,34 @@ Future<void> main() async {
 
 > ✅ **Checkpoint 2.1** ทดสอบสมัครสมาชิกด้วย Email ใหม่สำเร็จ ถ่ายภาพหน้าจอ Firebase Console เมนู Authentication → Users ที่แสดงบัญชีที่เพิ่งสมัคร จากนั้นทดสอบกรณีผิดพลาด 2 กรณี คือ (ก) สมัครซ้ำด้วย Email เดิม และ (ข) ใส่รหัสผ่านสั้นเกินไป ถ่ายภาพหน้าจอข้อความ Error ทั้งสองกรณี พร้อมอธิบายว่าโค้ดส่วนใดใน `auth_service.dart` เป็นตัวจัดการแต่ละกรณี
 
-```text
-บันทึกรูปผลลัพธ์ที่นี่ และคำอธิบายของแต่ละกรณี
-```
+<img width="476" height="1015" alt="image" src="https://github.com/user-attachments/assets/0657b6ec-5ecf-403d-82cc-c52405e9a534" />
+<img width="1917" height="870" alt="image" src="https://github.com/user-attachments/assets/80ed5bbb-7185-4b21-840e-a4abc01d1225" />
 
+(ก)
+<img width="470" height="1020" alt="image" src="https://github.com/user-attachments/assets/ae31f22e-02b8-4574-a5b8-1e4f208f5c56" />
+
+(ข)
+<img width="476" height="1013" alt="image" src="https://github.com/user-attachments/assets/ef9bcf3e-1f5d-4186-ad55-9d8bb2384e8d" />
+
+```
+คำอธิบายการจัดการ Error ใน lib/services/auth_service.dart:
+
+กรณี (ก) สมัครซ้ำด้วย Email เดิม (email-already-in-use): ในเมธอด signUp() มีบล็อก try/catch ดักจับ FirebaseAuthException เมื่อ Firebase ตรวจพบว่าอีเมลซ้ำ จะส่งค่า e.code เป็น 'email-already-in-use' ฟังก์ชัน _translateFirebaseError() จะจับเคส:
+
+dart
+case 'email-already-in-use':
+  return 'อีเมลนี้ถูกใช้งานแล้วในระบบ';
+
+และ throw AuthException พร้อมข้อความภาษาไทยส่งต่อไปยังหน้าจอ LoginPage เพื่อนำไปแสดงผล
+
+กรณี (ข) ใส่รหัสผ่านสั้นเกินไป (weak-password): เมื่อส่งรหัสผ่านที่มีความยาวไม่ถึง 6 ตัวอักษรไปยัง Firebase Authentication เซิร์ฟเวอร์จะปฏิเสธและส่ง FirebaseAuthException ที่มีค่า e.code เป็น 'weak-password' ซึ่งฟังก์ชัน _translateFirebaseError() จัดการด้วย:
+
+dart
+case 'weak-password':
+  return 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร';
+
+ทำให้หน้าจอแสดงผลข้อความเตือนเป็นภาษาไทยแทนข้อความ Error ภาษาอังกฤษดั้งเดิม
+```
 ---
 
 ## ส่วนที่ 3: เข้าสู่ระบบด้วย Google Sign-In
